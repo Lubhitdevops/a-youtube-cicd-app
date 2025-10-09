@@ -1,6 +1,6 @@
 ### 🚀 YouTube CI/CD DevOps Pipeline
 
-![CI/CD Architecture](356cf259-45e2-49b5-9419-85d8413a3bcc.png)
+<img width="975" height="549" alt="image" src="https://github.com/user-attachments/assets/5757bd12-dd8b-4676-a614-d2b60067b0f6" />
 
 ## 📘 Project Overview
 
@@ -52,7 +52,8 @@ for the base application code (`a-youtube-clone-app`) that serves as the foundat
 
 ### ⚙️ Step 2 – Jenkins & SonarQube Configuration
 
-![SonarQube Dashboard](image.png)
+<img width="975" height="466" alt="image" src="https://github.com/user-attachments/assets/cfbd4a04-7527-476a-a9a1-64db95d37901" />
+
 
 1. **Install Jenkins Plugins:**
    - SonarQube Scanner, Quality Gates  
@@ -133,7 +134,8 @@ pipeline {
 
 ### 🐳 Step 4 – DockerHub Integration
 
-![DockerHub Repository](image.png)
+<img width="975" height="479" alt="image" src="https://github.com/user-attachments/assets/5aab82ed-707e-4c9f-98a7-80bd1952df76" />
+
 
 * Added DockerHub credentials in Jenkins (`dockerhub`).
 * Built and pushed image automatically during the pipeline.
@@ -143,6 +145,11 @@ pipeline {
 ---
 
 ### 📊 Step 5 – Monitoring (Prometheus & Grafana)
+
+<img width="975" height="483" alt="image" src="https://github.com/user-attachments/assets/c03c65f8-fa57-48f5-aff5-8ed1a5df5ed5" />
+<img width="975" height="508" alt="image" src="https://github.com/user-attachments/assets/d97becfe-0098-4fb5-94c6-e556a4a0aaf1" />
+<img width="975" height="505" alt="image" src="https://github.com/user-attachments/assets/52d3abb1-fcef-4d9f-882b-f71f8f19bb2b" />
+
 
 * Created Terraform files for provisioning EC2 instances for monitoring.
 
@@ -229,6 +236,8 @@ helm install prometheus prometheus-community/kube-prometheus-stack
 
 ### 📬 Step 8 – Email Notifications & Kubernetes Deployment
 
+<img width="975" height="509" alt="image" src="https://github.com/user-attachments/assets/c7680050-a61e-4d6c-959e-1179f4b1b1ce" />
+
 ```groovy
     post {
         always {
@@ -262,6 +271,11 @@ Enabled email notifications with Jenkins Email Extension for success/failure bui
 ---
 
 ### 🔄 Step 9 – GitHub Webhook Integration
+
+<img width="975" height="483" alt="image" src="https://github.com/user-attachments/assets/1c3da2a8-073c-4daa-81b8-16b618baede4" />
+<img width="975" height="503" alt="image" src="https://github.com/user-attachments/assets/dc8e4046-f8aa-4777-b1fc-12539b85522c" />
+<img width="975" height="465" alt="image" src="https://github.com/user-attachments/assets/45d39913-2821-47bc-bf84-858b527c23dd" />
+
 
 1. Generated GitHub Personal Access Token.
 2. Added repo credentials in Jenkins.
