@@ -1,5 +1,3 @@
----
-
 ````
 # 🚀 YouTube CI/CD DevOps Pipeline
 
