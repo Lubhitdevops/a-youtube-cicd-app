@@ -1,5 +1,7 @@
 ### 🚀 YouTube CI/CD DevOps Pipeline
 
+![CI/CD Architecture](356cf259-45e2-49b5-9419-85d8413a3bcc.png)
+
 ## 📘 Project Overview
 
 This project demonstrates a **complete DevOps CI/CD pipeline** for a Node.js-based YouTube Clone application.  
