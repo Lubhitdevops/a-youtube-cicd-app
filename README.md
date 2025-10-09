@@ -1,85 +1,78 @@
-````
-# 🚀 YouTube CI/CD DevOps Pipeline
-
-![CI/CD Architecture](356cf259-45e2-49b5-9419-85d8413a3bcc.png)
-
-## 📘 Project Overview
-
-This project demonstrates a **complete DevOps CI/CD pipeline** for a Node.js-based YouTube Clone application.  
-It automates **infrastructure provisioning, code analysis, security scanning, containerization, deployment, and monitoring** using a modern DevOps toolchain.
+🚀 YouTube CI/CD DevOps Pipeline
+📘 Project Overview
+This project demonstrates a complete DevOps CI/CD pipeline for a Node.js-based YouTube Clone application.
+It automates infrastructure provisioning, code analysis, security scanning, containerization, deployment, and monitoring using a modern DevOps toolchain.
 
 The pipeline covers the entire flow — from a developer pushing code to GitHub, to automatic deployment on Kubernetes with continuous monitoring and feedback.
 
----
+🧑‍💻 Acknowledgment
+Special thanks to Ashfaque-9x —
+for the base application code (a-youtube-clone-app) that serves as the foundation for this CI/CD project.
 
-## 🧑‍💻 Acknowledgment
+🧰 Tools & Technologies Used
+Category	Tools
+Version Control & Collaboration	Git, GitHub, GitHub Webhooks
+Continuous Integration / Continuous Delivery (CI/CD)	Jenkins
+Infrastructure as Code (IaC)	Terraform
+Containerization	Docker
+Container Security	Trivy
+Static Code Analysis	SonarQube
+Cluster Orchestration	Kubernetes (K3s / EKS)
+Monitoring & Visualization	Prometheus, Grafana, Node Exporter
+Notifications	Jenkins Email Extension
+Cloud Platform	AWS (EC2, EKS)
+Programming & Build Tools	Node.js, NPM
+OS & Utilities	Ubuntu 22.04 LTS
+🪜 CI/CD Workflow Overview
+🧱 Step 1 – Infrastructure Setup (Terraform)
+Created Terraform configuration to provision EC2 instances for Jenkins and SonarQube.
 
-Special thanks to **[Ashfaque-9x](https://github.com/Ashfaque-9x/a-youtube-clone-app.git)** —  
-for the base application code (`a-youtube-clone-app`) that serves as the foundation for this CI/CD project.
+After deployment, ran installation scripts (sonar-jenkins/install.sh) to install:
 
----
+Jenkins
 
-## 🧰 Tools & Technologies Used
+SonarQube
 
-| Category | Tools |
-|-----------|--------|
-| **Version Control & Collaboration** | Git, GitHub, GitHub Webhooks |
-| **Continuous Integration / Continuous Delivery (CI/CD)** | Jenkins |
-| **Infrastructure as Code (IaC)** | Terraform |
-| **Containerization** | Docker |
-| **Container Security** | Trivy |
-| **Static Code Analysis** | SonarQube |
-| **Cluster Orchestration** | Kubernetes (K3s / EKS) |
-| **Monitoring & Visualization** | Prometheus, Grafana, Node Exporter |
-| **Notifications** | Jenkins Email Extension |
-| **Cloud Platform** | AWS (EC2, EKS) |
-| **Programming & Build Tools** | Node.js, NPM |
-| **OS & Utilities** | Ubuntu 22.04 LTS |
+Docker
 
----
+Trivy
 
-## 🪜 CI/CD Workflow Overview
+⚙️ Step 2 – Jenkins & SonarQube Configuration
+https://image.png
 
-### 🧱 Step 1 – Infrastructure Setup (Terraform)
+Install Jenkins Plugins:
 
-- Created Terraform configuration to provision **EC2 instances** for Jenkins and SonarQube.
-- After deployment, ran installation scripts (`sonar-jenkins/install.sh`) to install:
-  - Jenkins  
-  - SonarQube  
-  - Docker  
-  - Trivy  
+SonarQube Scanner, Quality Gates
 
----
+NodeJS
 
-### ⚙️ Step 2 – Jenkins & SonarQube Configuration
+Docker, Docker Pipeline, Docker API, Docker Build Step
 
-1. **Install Jenkins Plugins:**
-   - SonarQube Scanner, Quality Gates  
-   - NodeJS  
-   - Docker, Docker Pipeline, Docker API, Docker Build Step  
-   - Eclipse Temurin installer  
+Eclipse Temurin installer
 
-2. **Configure Global Tools in Jenkins:**
-   - JDK: `jdk17`  
-   - NodeJS: `node18`  
-   - SonarQube Scanner: `sonar-scanner`
+Configure Global Tools in Jenkins:
 
-3. **SonarQube Integration:**
-   - Generate a token in SonarQube → Add to Jenkins credentials as “Secret Text”.  
-   - In Jenkins → *Manage Jenkins → Configure System → SonarQube Servers* → add SonarQube URL & token.  
-   - In SonarQube → *Administration → Webhooks* →  
-     ```
-     Name: jenkins
-     URL: http://<jenkins-ip>:8080/sonarqube-webhook/
-     ```
+JDK: jdk17
 
----
+NodeJS: node18
 
-### 🧩 Step 3 – Jenkins Pipeline Configuration
+SonarQube Scanner: sonar-scanner
 
-Here’s the Jenkinsfile used for CI/CD automation:
+SonarQube Integration:
 
-```groovy
+Generate a token in SonarQube → Add to Jenkins credentials as "Secret Text".
+
+In Jenkins → Manage Jenkins → Configure System → SonarQube Servers → add SonarQube URL & token.
+
+In SonarQube → Administration → Webhooks →
+
+text
+Name: jenkins
+URL: http://<jenkins-ip>:8080/sonarqube-webhook/
+🧩 Step 3 – Jenkins Pipeline Configuration
+Here's the Jenkinsfile used for CI/CD automation:
+
+groovy
 pipeline {
     agent any
     tools {
@@ -126,77 +119,46 @@ pipeline {
             }
         }
         stage('Trivy Image Scan') { steps { sh 'trivy image lubhitdocker/youtube-cicd:latest > trivyimage.txt' } }
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    dir('Kubernetes') {
-                        withKubeConfig(credentialsId: 'Kubernetes') {
-                            sh 'kubectl apply -f deployment.yml'
-                            sh 'kubectl apply -f service.yml'
-                        }
-                    }
-                }
-            }
-        }
-    }
-    post {
-        always {
-            emailext attachLog: true,
-                subject: "'${currentBuild.result}'",
-                body: "Project: ${env.JOB_NAME}<br/>" +
-                      "Build Number: ${env.BUILD_NUMBER}<br/>" +
-                      "URL: ${env.BUILD_URL}<br/>",
-                to: 'mlubhit@gmail.com',
-                attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
-        }
-    }
-}
-````
+🐳 Step 4 – DockerHub Integration
+https://image.png
 
----
+Added DockerHub credentials in Jenkins (dockerhub).
 
-### 🐳 Step 4 – DockerHub Integration
+Built and pushed image automatically during the pipeline.
 
-* Added DockerHub credentials in Jenkins (`dockerhub`).
-* Built and pushed image automatically during the pipeline.
-* Resulting image:
-  🔗 [DockerHub – lubhitdocker/youtube-cicd](https://hub.docker.com/r/lubhitdocker/youtube-cicd)
+Resulting image:
+🔗 DockerHub – lubhitdocker/youtube-cicd
 
----
+📊 Step 5 – Monitoring (Prometheus & Grafana)
+Created Terraform files for provisioning EC2 instances for monitoring.
 
-### 📊 Step 5 – Monitoring (Prometheus & Grafana)
+Installed:
 
-* Created Terraform files for provisioning EC2 instances for monitoring.
+Prometheus
 
-* Installed:
+Grafana
 
-  * Prometheus
-  * Grafana
-  * Node Exporter
+Node Exporter
 
-* Integrated Prometheus to scrape metrics from Jenkins & Kubernetes.
+Integrated Prometheus to scrape metrics from Jenkins & Kubernetes.
 
-* Imported Grafana dashboards for:
+Imported Grafana dashboards for:
 
-  * Jenkins Build Performance
-  * Kubernetes Cluster Monitoring
-  * Node Exporter (EC2 metrics)
+Jenkins Build Performance
 
----
+Kubernetes Cluster Monitoring
 
-### ☸️ Step 6 – Kubernetes Deployment Files
+Node Exporter (EC2 metrics)
 
+☸️ Step 6 – Kubernetes Deployment Files
 Located inside:
 
-```
+text
 Kubernetes/
  ├─ deployment.yml
  └─ service.yml
-```
-
-#### deployment.yml
-
-```yaml
+deployment.yml
+yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -216,11 +178,8 @@ spec:
         image: lubhitdocker/youtube-cicd:latest
         ports:
         - containerPort: 80
-```
-
-#### service.yml
-
-```yaml
+service.yml
+yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -234,107 +193,118 @@ spec:
       port: 80
       targetPort: 80
       nodePort: 30080
-```
-
----
-
-### 🛠️ Step 7 – Kubernetes + Prometheus Integration (Helm)
-
+🛠️ Step 7 – Kubernetes + Prometheus Integration (Helm)
 Installed and configured Prometheus stack on Kubernetes for pod, node, and service-level monitoring.
 
-```bash
+bash
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm install prometheus prometheus-community/kube-prometheus-stack
-```
+📬 Step 8 – Email Notifications & Kubernetes Deployment
+groovy
+    post {
+        always {
+            emailext attachLog: true,
+                subject: "'${currentBuild.result}'",
+                body: "Project: ${env.JOB_NAME}<br/>" +
+                      "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                      "URL: ${env.BUILD_URL}<br/>",
+                to: 'mlubhit@gmail.com',
+                attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+        }
+    }
+}
 
----
-
-### 📬 Step 8 – Email Notifications
-
+stage('Deploy to Kubernetes') {
+    steps {
+        script {
+            dir('Kubernetes') {
+                withKubeConfig(credentialsId: 'Kubernetes') {
+                    sh 'kubectl apply -f deployment.yml'
+                    sh 'kubectl apply -f service.yml'
+                }
+            }
+        }
+    }
+}
 Enabled email notifications with Jenkins Email Extension for success/failure build reports and Trivy scan attachments.
 
----
+🔄 Step 9 – GitHub Webhook Integration
+Generated GitHub Personal Access Token.
 
-### 🔄 Step 9 – GitHub Webhook Integration
+Added repo credentials in Jenkins.
 
-1. Generated GitHub Personal Access Token.
-2. Added repo credentials in Jenkins.
-3. Set **GitHub hook trigger for GITScm polling**.
-4. In GitHub → Settings → Webhooks:
+Set GitHub hook trigger for GITScm polling.
 
-   ```
-   Payload URL: http://<jenkins-ip>:8080/github-webhook/
-   Content type: application/json
-   ```
-5. Any push to the main branch triggers an automatic pipeline execution.
+In GitHub → Settings → Webhooks:
 
----
+text
+Payload URL: http://<jenkins-ip>:8080/github-webhook/
+Content type: application/json
+Any push to the main branch triggers an automatic pipeline execution.
 
-## ✅ Outcome
+✅ Outcome
+Fully automated CI/CD pipeline from commit → build → scan → deploy → monitor.
 
-* Fully automated **CI/CD pipeline** from commit → build → scan → deploy → monitor.
-* Continuous feedback loop through:
+Continuous feedback loop through:
 
-  * **SonarQube (Code Quality)**
-  * **Trivy (Security)**
-  * **Prometheus & Grafana (Monitoring)**
-  * **Email Notifications (Build Reports)**
+SonarQube (Code Quality)
 
----
+Trivy (Security)
 
-## 📜 License
+Prometheus & Grafana (Monitoring)
 
-This project is licensed under the **MIT License** — feel free to use, modify, and distribute for educational or personal projects.
+Email Notifications (Build Reports)
 
-```
+📜 License
+This project is licensed under the MIT License — feel free to use, modify, and distribute for educational or personal projects.
+
+text
 MIT License
 
 Copyright (c) 2025 Lubhit Mawar
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
-```
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
----
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-## 👨‍💻 Author
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+👨‍💻 Author
+Lubhit Mawar
+📧 mlubhit@gmail.com
+🐳 DockerHub – lubhitdocker
+💻 GitHub – Lubhitdevops
 
-**Lubhit Mawar**
-📧 [mlubhit@gmail.com](mailto:mlubhit@gmail.com)
-🐳 [DockerHub – lubhitdocker](https://hub.docker.com/u/lubhitdocker)
-💻 [GitHub – Lubhitdevops](https://github.com/Lubhitdevops)
+🙏 Acknowledgment
+Base Application: Ashfaque-9x / a-youtube-clone-app
 
----
+🌟 Future Enhancements
+Automate EKS cluster provisioning via Terraform
 
-## 🙏 Acknowledgment
+Integrate Slack or Teams notifications
 
-Base Application: [Ashfaque-9x / a-youtube-clone-app](https://github.com/Ashfaque-9x/a-youtube-clone-app.git)
+Add Canary or Blue-Green deployment strategy
 
----
+Implement GitOps with ArgoCD
 
-## 🌟 Future Enhancements
-
-* Automate EKS cluster provisioning via Terraform
-* Integrate Slack or Teams notifications
-* Add Canary or Blue-Green deployment strategy
-* Implement GitOps with ArgoCD
-
----
-
-## 💡 Tech Stack Summary
-
-| Layer             | Technology                                    |
-| ----------------- | --------------------------------------------- |
-| **Frontend**      | React, NPM                                    |
-| **Backend**       | Node.js                                       |
-| **DevOps Tools**  | Jenkins, Terraform, Docker, Trivy, Kubernetes |
-| **Monitoring**    | Prometheus, Grafana                           |
-| **Cloud**         | AWS                                           |
-| **VCS**           | Git, GitHub                                   |
-| **Notifications** | Email (SMTP via Jenkins)                      |
-
----
-
-✨ *End-to-End CI/CD DevOps Pipeline built by [Lubhit Mawar](https://github.com/Lubhitdevops).*
-
+💡 Tech Stack Summary
+Layer	Technology
+Frontend	React, NPM
+Backend	Node.js
+DevOps Tools	Jenkins, Terraform, Docker, Trivy, Kubernetes
+Monitoring	Prometheus, Grafana
+Cloud	AWS
+VCS	Git, GitHub
+Notifications	Email (SMTP via Jenkins)
+✨ End-to-End CI/CD DevOps Pipeline built with love by Lubhit Mawar.
